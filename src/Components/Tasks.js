@@ -13,9 +13,13 @@ class Tasks {
 
   static list = document.querySelector('ul');
 
-  static db = () => {
-    const datas = ((window.localStorage.getItem('tasks') !== null) ? JSON.parse(window.localStorage.getItem('tasks')) : []);
-    return datas.sort((a, b) => parseFloat(a.index) - parseFloat(b.index));
+  static db = (data) => {
+    if (!data) {
+      const datas = ((window.localStorage.getItem('tasks') !== null) ? JSON.parse(window.localStorage.getItem('tasks')) : []);
+      return datas.sort((a, b) => parseFloat(a.index) - parseFloat(b.index));
+    }
+    window.localStorage.setItem('tasks', JSON.stringify(data));
+    return true;
   }
 
   static load = () => {
@@ -31,22 +35,25 @@ class Tasks {
     const data = this.db();
     data.push(task);
     this.createElement(task);
-    window.localStorage.setItem('tasks', JSON.stringify(data));
+    this.db(data);
     return this.db().length;
   }
 
   static removeBook = (button) => {
     let counter = 0;
     let result = this.db();
+
     button.forEach((btn) => {
       result = result.filter((task) => task.index !== parseInt(btn.getAttribute('data-task-id'), 10));
     });
+
     result.forEach((row) => {
       row.index = counter;
       counter += 1;
     });
+
     result = result.sort((a, b) => parseFloat(a.index) - parseFloat(b.index));
-    window.localStorage.setItem('tasks', JSON.stringify(result));
+    this.db(result);
     const count = this.load();
     document.querySelector('.number-label').innerText = count;
   }
@@ -58,12 +65,13 @@ class Tasks {
     } else {
       data[index].descption = value;
     }
-    window.localStorage.setItem('tasks', JSON.stringify(data));
+    this.db(data);
   }
 
   static createElement = (task) => {
     const listItem = document.createElement('li');
     const form = document.createElement('form');
+
     form.addEventListener('submit', (el) => {
       el.preventDefault();
       if (el.target.children[0].value !== '') {
@@ -71,6 +79,7 @@ class Tasks {
         el.target.children[0].blur();
       }
     });
+
     form.classList.add('current-task');
     listItem.classList.add('dragable');
     const button = document.createElement('p');
@@ -78,6 +87,7 @@ class Tasks {
     input.setAttribute('data-task-id', task.index);
     const checkbox = document.createElement('input');
     checkbox.setAttribute('data-task-id', task.index);
+
     checkbox.addEventListener('change', () => {
       Tasks.updateData(checkbox.getAttribute('data-task-id'), 'completed', checkbox.checked);
       if (checkbox.checked) {
@@ -86,13 +96,16 @@ class Tasks {
         checkbox.parentElement.nextSibling.children[0].classList.remove('completed');
       }
     });
+
     const p = document.createElement('p');
     p.classList.add('checkmark');
     const label = document.createElement('label');
+
     if (task.completed) {
       checkbox.setAttribute('checked', true);
       input.classList.add('completed');
     }
+
     checkbox.type = 'checkbox';
     checkbox.classList.add('check-stats');
     label.appendChild(checkbox);
@@ -107,12 +120,14 @@ class Tasks {
     listItem.appendChild(form);
     listItem.appendChild(button);
     listItem.draggable = true;
+
     input.addEventListener('focus', () => {
       setEditable(input);
       button.addEventListener('click', () => {
         Tasks.removeBook([button]);
       });
     });
+
     input.addEventListener('blur', () => setNonEditable(input));
     this.list.appendChild(listItem);
   }

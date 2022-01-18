@@ -12,6 +12,7 @@ const setNonEditable = (element) => {
 
 const refreshPage = (element) => {
   element.classList.add('rotate-me');
+
   setTimeout(() => {
     element.classList.remove('rotate-me');
   }, 2000);
@@ -43,6 +44,7 @@ const addEventsListerners = () => {
   dragables.forEach((dragable) => {
     dragable.addEventListener('dragstart', dragStart);
   });
+
   dragablesList.forEach((item) => {
     item.addEventListener('dragover', dragOver);
     item.addEventListener('drop', dropOver);
