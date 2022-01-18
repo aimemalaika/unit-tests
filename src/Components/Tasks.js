@@ -13,9 +13,13 @@ class Tasks {
 
   static list = document.querySelector('ul');
 
-  static db = () => {
-    const datas = ((window.localStorage.getItem('tasks') !== null) ? JSON.parse(window.localStorage.getItem('tasks')) : []);
-    return datas.sort((a, b) => parseFloat(a.index) - parseFloat(b.index));
+  static db = (data) => {
+    if (!data) {
+      const datas = ((window.localStorage.getItem('tasks') !== null) ? JSON.parse(window.localStorage.getItem('tasks')) : []);
+      return datas.sort((a, b) => parseFloat(a.index) - parseFloat(b.index));
+    }
+    window.localStorage.setItem('tasks', JSON.stringify(data));
+    return true;
   }
 
   static load = () => {
@@ -31,7 +35,7 @@ class Tasks {
     const data = this.db();
     data.push(task);
     this.createElement(task);
-    window.localStorage.setItem('tasks', JSON.stringify(data));
+    this.db(data);
     return this.db().length;
   }
 
@@ -49,7 +53,7 @@ class Tasks {
     });
 
     result = result.sort((a, b) => parseFloat(a.index) - parseFloat(b.index));
-    window.localStorage.setItem('tasks', JSON.stringify(result));
+    this.db(result);
     const count = this.load();
     document.querySelector('.number-label').innerText = count;
   }
@@ -61,7 +65,7 @@ class Tasks {
     } else {
       data[index].descption = value;
     }
-    window.localStorage.setItem('tasks', JSON.stringify(data));
+    this.db(data);
   }
 
   static createElement = (task) => {
