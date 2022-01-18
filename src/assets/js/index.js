@@ -14,6 +14,7 @@ import '../css/index.css';
 
 const submitData = () => {
   const description = document.querySelector('#taskname');
+
   if (description.value !== '') {
     const taskObj = new Tasks(description.value, Tasks.db().length);
     const count = Tasks.addTask(taskObj);
@@ -45,6 +46,7 @@ document.querySelectorAll('.current-task').forEach((form) => {
 document.querySelectorAll('.check-stats').forEach((check) => {
   check.addEventListener('click', () => {
     Tasks.updateData(check.getAttribute('data-task-id'), 'completed', check.checked);
+
     if (check.checked) {
       check.parentElement.nextSibling.children[0].classList.add('completed');
     } else {
@@ -55,6 +57,7 @@ document.querySelectorAll('.check-stats').forEach((check) => {
 
 document.querySelector('#clear-all').addEventListener('click', () => {
   const listObj = [];
+
   document.querySelectorAll('.check-stats').forEach((checker) => {
     if (checker.checked) {
       listObj.push(checker);
